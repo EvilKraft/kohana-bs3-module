@@ -8,7 +8,7 @@ abstract class Bootstrap_Element_Element {
 
     protected $_content = NULL;
 
-    protected $_data = array();
+    protected $_children = array();
 
     public static function factory(array $attributes = array(), $template = NULL){
         $class = get_called_class();
@@ -24,10 +24,16 @@ abstract class Bootstrap_Element_Element {
                          : View::factory($template);
     }
 
-    public function add(Bootstrap_Element_Element $data){
-        $this->_data[] = $data;
+    public function add(Bootstrap_Element_Element $child){
+        $this->_children[] = $child;
 
         return $this;
+    }
+
+    public function children($child_id = NULL){
+        return is_null($child_id)
+            ? $this->_children
+            : Arr::get($this->_children, $child_id);
     }
 
     public function attributes($attribut = NULL){
@@ -51,7 +57,9 @@ abstract class Bootstrap_Element_Element {
             ))->render();
         }
 
-        return (string) $this->_content;
+        echo '<pre>zzzzzz'.print_r($this->_content, true).'zzzzzz</pre>';
+
+        //return (string) $this->_content;
     }
 
     public function __toString(){
