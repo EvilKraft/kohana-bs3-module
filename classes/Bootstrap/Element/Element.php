@@ -100,4 +100,14 @@ abstract class Bootstrap_Element_Element {
             return $this;
         }
     }
+
+    public function render_to_file($filename){
+        $dir = dirname($filename);
+
+        if(!is_writable($dir)){
+            throw new Kohana_Exception('Directory "'.$dir.'" is not writable.');
+        }
+
+        file_put_contents($filename, $this->render(), LOCK_EX);
+    }
 } 
