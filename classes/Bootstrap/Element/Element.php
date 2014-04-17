@@ -8,8 +8,6 @@ abstract class Bootstrap_Element_Element {
 
     protected $_prefix = '';
 
-    protected $_children = array();
-
     protected $_real_id = '';
 
     protected $_help_block = '';
@@ -34,14 +32,6 @@ abstract class Bootstrap_Element_Element {
                          : View::factory($template);
     }
 
-    public function add(Bootstrap_Element_Element $child){
-        $child->prefix($this->prefix());
-
-        $this->_children[] = $child;
-
-        return $this;
-    }
-
     public function prefix($prefix = NULL){
         if(is_null($prefix)){
             return $this->_prefix;
@@ -52,12 +42,6 @@ abstract class Bootstrap_Element_Element {
                 $this->_attributes['id'] = $this->_prefix . $this->_real_id;
             }
         }
-    }
-
-    public function children($child_id = NULL){
-        return is_null($child_id)
-               ? $this->_children
-               : Arr::get($this->_children, $child_id);
     }
 
     public function attributes($attribut = NULL){
@@ -84,28 +68,6 @@ abstract class Bootstrap_Element_Element {
     public function __toString(){
         return $this->render();
     }
-
-
-/*
-    public function __get($column){
-        return $this->get($column);
-    }
-
-    public function get($column)
-    {
-        if (array_key_exists($column, $this->_object))
-        {
-            return (in_array($column, $this->_serialize_columns))
-                ? $this->_unserialize_value($this->_object[$column])
-                : $this->_object[$column];
-        }
-        else
-        {
-            throw new Kohana_Exception('The :property property does not exist in the :class class',
-                array(':property' => $column, ':class' => get_class($this)));
-        }
-    }
-*/
 
     public function addClass($class){
         $class_a = explode(' ', $this->attributes('class'));

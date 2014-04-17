@@ -1,0 +1,1 @@
+<?php echo Form::input($element->attributes('name'), $element->attributes('value'), $element->attributes()); ?>
