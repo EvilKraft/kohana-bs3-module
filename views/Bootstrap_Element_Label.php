@@ -1,1 +1,1 @@
-<?php echo $element->content(); ?>
+<?php echo Form::label($element->attributes('for'), $element->title(), $element->attributes()); ?>

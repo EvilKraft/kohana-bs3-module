@@ -2,12 +2,15 @@
 
 class Bootstrap_Form extends Bootstrap_Element_Element {
 
-    public function content(){
-        foreach($this->_children as $child){
-            $this->_content .= (string) $child;
+    public function __construct(array $attributes = array(), $template = NULL){
+        parent::__construct($attributes, $template);
+
+        $this->_attributes['role'] = 'form';
+
+        $prefix = Arr::get($this->attributes(), 'id', '');
+        if($prefix != ''){
+            $prefix .= '_';
         }
-
-        return $this->_content;
+        $this->_prefix = $prefix;
     }
-
 } 

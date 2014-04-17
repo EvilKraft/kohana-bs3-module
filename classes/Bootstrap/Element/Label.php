@@ -2,9 +2,14 @@
 
 class Bootstrap_Element_Label extends Bootstrap_Element_Element{
 
-    public function content() {
-        $this->_content = Form::label($this->get('for'), $this->get('title'), $this->attributes());
+    protected $_title = NULL;
 
-        return $this->_content;
+    public function title($title = NULL){
+        if(is_null($title)){
+            return $this->_title;
+        }else{
+            $this->_title = (string) $title;
+            return $this;
+        }
     }
-} 
+}
