@@ -19,13 +19,12 @@ abstract class Bootstrap_Element_Element {
     }
 
     public function __construct(array $attributes = array(), $template = NULL){
-        $this->_attributes = $attributes;
+        $this->_attributes['id'] = Arr::get($attributes, 'name');
 
-        if(is_null($this->attributes('id'))){
-            $this->_attributes['id'] = $this->attributes('name');
-        }
+        $this->_attributes = Arr::merge($this->_attributes, $attributes);
+
+
         $this->_real_id = $this->attributes('id');
-
 
         $this->_template = is_null($template)
                          ? View::factory(get_class($this))

@@ -5,6 +5,8 @@ class Bootstrap_Element_Input extends Bootstrap_Element_Element{
     protected $_label = NULL;
 
     public function __construct(array $attributes = array(), $template = NULL){
+        $this->_attributes['placeholder'] = Arr::get($attributes, 'name');
+
         parent::__construct($attributes, $template);
 
         $this->addClass('form-control');

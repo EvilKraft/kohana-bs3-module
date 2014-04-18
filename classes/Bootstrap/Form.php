@@ -9,7 +9,7 @@ class Bootstrap_Form extends Bootstrap_Element_Element {
 
         $this->_attributes['role'] = 'form';
 
-        $prefix = Arr::get($this->attributes(), 'id', '');
+        $prefix = $this->attributes('id');
         if($prefix != ''){
             $prefix .= '_';
         }

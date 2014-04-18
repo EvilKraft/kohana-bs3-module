@@ -4,6 +4,12 @@ class Bootstrap_Element_Label extends Bootstrap_Element_Element{
 
     protected $_title = NULL;
 
+    public function __construct(array $attributes = array(), $template = NULL){
+        parent::__construct($attributes, $template);
+
+        $this->addClass('control-label');
+    }
+
     public function title($title = NULL){
         if(is_null($title)){
             return $this->_title;
