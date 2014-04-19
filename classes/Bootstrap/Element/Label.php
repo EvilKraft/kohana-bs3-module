@@ -4,6 +4,8 @@ class Bootstrap_Element_Label extends Bootstrap_Element_Element{
 
     protected $_title = NULL;
 
+    protected $_required_attributes = array();
+
     public function __construct(array $attributes = array(), $template = NULL){
         parent::__construct($attributes, $template);
 

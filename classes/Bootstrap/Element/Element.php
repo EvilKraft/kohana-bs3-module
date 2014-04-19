@@ -12,6 +12,8 @@ abstract class Bootstrap_Element_Element {
 
     protected $_help_block = '';
 
+    protected $_required_attributes = array('name');
+
     public static function factory(array $attributes = array(), $template = NULL){
         $class = get_called_class();
 
@@ -19,6 +21,8 @@ abstract class Bootstrap_Element_Element {
     }
 
     public function __construct(array $attributes = array(), $template = NULL){
+        $this->checkAttributes($attributes);
+
         $this->_attributes['id'] = Arr::get($attributes, 'name');
 
         $this->_attributes = Arr::merge($this->_attributes, $attributes);
@@ -89,6 +93,18 @@ abstract class Bootstrap_Element_Element {
         $this->_attributes['class'] = implode(' ', $class_a);
     }
 
+    public function addStyle($style){
+        $styles = explode(';', $this->attributes('style'));
+        $style  = explode(';', $style);
+
+        $styles = array_merge ($styles, $style);
+
+        //Remove an empty array elements
+        $styles = array_diff($styles, array(''));
+
+        $this->_attributes['style'] = implode(';', $styles).';';
+    }
+
     public function help_block($text = NULL, array $attributes = array()){
         if(is_null($text)){
             return (string) $this->_help_block;
@@ -108,5 +124,16 @@ abstract class Bootstrap_Element_Element {
         }
 
         file_put_contents($filename, $this->render(), LOCK_EX);
+    }
+
+    protected function checkAttributes(Array $attributes){
+
+        $res_array = array_diff($this->_required_attributes, array_keys($attributes));
+
+        if(count($res_array) > 0){
+            throw new Kohana_Exception('Class "'.get_class($this).'" is require attributes: "'.implode('","', $res_array).'".');
+        }
+
+        return true;
     }
 } 

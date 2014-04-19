@@ -1,25 +1,16 @@
 <?php defined('SYSPATH') OR die('No direct script access.');
 
-class Bootstrap_Element_Textarea extends Bootstrap_Element_Element{
+class Bootstrap_Element_Datepicker extends Bootstrap_Element_Input{
 
-    protected $_text  = NULL;
     protected $_label = NULL;
 
     public function __construct(array $attributes = array(), $template = NULL){
-        $this->_attributes['rows'] = 10;
+        $this->_attributes['readonly'] = 'readonly';
 
         parent::__construct($attributes, $template);
 
-        $this->addClass('form-control');
-    }
-
-    public function text($text = NULL){
-        if(is_null($text)){
-            return $this->_text;
-        }else{
-            $this->_text = (string) $text;
-            return $this;
-        }
+        $this->addClass('datepicker');
+        $this->addStyle('cursor: pointer');
     }
 
     public function label($title = NULL, array $attributes = array()){

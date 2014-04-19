@@ -3,6 +3,7 @@
 class Bootstrap_Form extends Bootstrap_Element_Element {
 
     protected $_children = array();
+    protected $_caption  = '';
 
     public function __construct(array $attributes = array(), $template = NULL){
         parent::__construct($attributes, $template);
@@ -28,5 +29,13 @@ class Bootstrap_Form extends Bootstrap_Element_Element {
         return is_null($child_id)
             ? $this->_children
             : Arr::get($this->_children, $child_id);
+    }
+
+    public function caption($text = NULL){
+       if(is_null($text)){
+           return $this->_caption;
+       }else{
+           $this->_caption = '<legend>'.$text.'</legend>';
+       }
     }
 } 
