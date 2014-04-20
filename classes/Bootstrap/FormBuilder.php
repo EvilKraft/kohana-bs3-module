@@ -12,7 +12,9 @@ class Bootstrap_FormBuilder  {
             $model = ORM::factory($model);
         }
 
-        $form = new $form;
+        $form = new $form(array(
+            'name' => 'frm_'.$model->object_name()
+        ));
 
         return new Bootstrap_FormBuilder($model, $form);
     }
@@ -20,47 +22,47 @@ class Bootstrap_FormBuilder  {
     public function __construct(ORM $model, Bootstrap_Form $form){
         $this->_model = $model;
         $this->_form  = $form;
+
+        $this->fillForm();
     }
 
-    public function fillForm(){
+    protected function fillForm(){
         foreach($this->_model->table_columns() as $field){
+            $attributes = array(
+                'name'  => $field['column_name'],
+                'value' => $this->_model->$field['column_name']
+            );
+
             if($field['key'] == 'PRI'){
-                $this->_buffer .= $this->hidden($field['column_name'], $model->$field['column_name']);
+                $this->_form->add(
+                    Bootstrap_Element_Hidden::factory($attributes)
+                );
             }else{
                 switch($field['data_type']){
                     case 'int'       :
                     case 'tinyint'   :
-                        $this->_buffer .= $this->AdvancedInput(
-                            $field['column_name'],
-                            $model->$field['column_name'],
-                            NULL,
-                            Arr::get($model->labels(), $field['column_name'])
+                        $this->_form->add(
+                            Bootstrap_Element_Input::factory($attributes)
                         );
                         break;
-                    case 'char'    :
-                    case 'varchar' :
-                        $this->_buffer .= $this->AdvancedInput(
-                            $field['column_name'],
-                            $model->$field['column_name'],
-                            array(
-                                'maxlength' => $field['character_maximum_length']
-                            ),
-                            Arr::get($model->labels(), $field['column_name'])
+                    case 'char'      :
+                    case 'varchar'   :
+                        $attributes['maxlength'] = $field['character_maximum_length'];
+                        $this->_form->add(
+                            Bootstrap_Element_Input::factory($attributes)
                         );
                         break;
                     case 'text'      :
                     case 'tinytext'  :
-                        $this->_buffer .= $this->AdvancedTextarea(
-                            $field['column_name'],
-                            $model->$field['column_name']
+                        $this->_form->add(
+                            Bootstrap_Element_Textarea::factory($attributes)
                         );
                         break;
                     case 'date'      :
-                        $this->_buffer .= $this->Datepicker(
-                            $field['column_name'],
-                            implode('-', array_reverse(explode('-', $model->$field['column_name']))),
-                            NULL,
-                            Arr::get($model->labels(), $field['column_name'])
+                        $attributes['value'] = implode('-', array_reverse(explode('-', $attributes['value'])));
+
+                        $this->_form->add(
+                            Bootstrap_Element_Datepicker::factory($attributes)
                         );
                         break;
 
@@ -77,5 +79,9 @@ class Bootstrap_FormBuilder  {
         }
 
         return $this;
+    }
+
+    public function render(){
+        return $this->_form->render();
     }
 } 
