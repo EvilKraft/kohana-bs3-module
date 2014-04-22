@@ -43,14 +43,18 @@ abstract class Bootstrap_Element_Element {
 
             if($this->_real_id != ''){
                 $this->_attributes['id'] = $this->_prefix . $this->_real_id;
+
+                if(isset($this->_label) && $this->_label instanceof Bootstrap_Element_Label){
+                    $this->_label->for = $this->id;
+                }
             }
         }
     }
 
-    public function attributes($attribut = NULL){
-        return is_null($attribut)
+    public function attributes($attribute = NULL){
+        return is_null($attribute)
                ? $this->_attributes
-               : Arr::get($this->_attributes, $attribut);
+               : Arr::get($this->_attributes, $attribute);
     }
 
     public function real_id(){
@@ -136,4 +140,29 @@ abstract class Bootstrap_Element_Element {
 
         return true;
     }
+
+    public function __isset($attribute){
+        return isset($this->_attributes[$attribute]);
+    }
+
+    public function __unset($attribute){
+        unset($this->_attributes[$attribute]);
+    }
+
+
+    public function __set($attribute, $value){
+		$this->set($attribute, $value);
+	}
+
+    public function set($attribute, $value){
+        $this->_attributes[$attribute] = $value;
+
+        return $this;
+    }
+
+
+    public function __get($attribute){
+		return $this->attributes($attribute);
+	}
+
 } 

@@ -17,7 +17,7 @@ class Bootstrap_Element_Datepicker extends Bootstrap_Element_Input{
         if(is_null($title)){
             return (string) $this->_label;
         }else{
-            $attributes['for'] = Arr::get($this->_attributes, 'id');
+            $attributes['for'] = $this->attributes('id');
 
             $this->_label = Bootstrap_Element_Label::factory($attributes)
                 ->title($title);

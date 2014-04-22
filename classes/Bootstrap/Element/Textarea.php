@@ -26,12 +26,32 @@ class Bootstrap_Element_Textarea extends Bootstrap_Element_Element{
         if(is_null($title)){
             return (string) $this->_label;
         }else{
-            $attributes['for'] = Arr::get($this->_attributes, 'id');
+            $attributes['for'] = $this->attributes('id');
 
             $this->_label = Bootstrap_Element_Label::factory($attributes)
                 ->title($title);
 
             return $this;
+        }
+    }
+
+    //
+    // TODO
+    // Label not work with TinyMSE
+    //
+    public function prefix($prefix = NULL){
+        if(is_null($prefix)){
+            return $this->_prefix;
+        }else{
+            $this->_prefix = (string) $prefix;
+
+            if($this->_real_id != ''){
+                $this->_attributes['id'] = $this->_prefix . $this->_real_id;
+
+                if(isset($this->_label) && $this->_label instanceof Bootstrap_Element_Label){
+                    $this->_label->for = $this->id;
+                }
+            }
         }
     }
 }
