@@ -87,14 +87,25 @@ abstract class Bootstrap_Element_Element {
         $this->_attributes['class'] = implode(' ', $class_a);
     }
 
-    public function delClass($class){
-        $class_a = explode(' ', $this->attributes('class'));
+    public function delClass($classes){
+        if(!is_array($classes)){
+            $classes = array($classes);
+        }
 
+        $class_a = explode(' ', $this->attributes('class'));
         $class_a = array_flip($class_a);
-        unset($class_a[$class]);
+
+        foreach($classes as $class){ unset($class_a[$class]); }
+
         $class_a = array_keys($class_a);
 
         $this->_attributes['class'] = implode(' ', $class_a);
+    }
+
+    public function hasClass($class){
+        $class_a = explode(' ', $this->attributes('class'));
+
+        return in_array($class, $class_a);
     }
 
     public function addStyle($style){

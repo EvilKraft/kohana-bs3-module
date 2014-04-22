@@ -3,6 +3,7 @@
 class Bootstrap_Form extends Bootstrap_Element_Element {
 
     protected $_children = array();
+    protected $_buttons  = array();
     protected $_caption  = '';
 
     public function __construct(array $attributes = array(), $template = NULL){
@@ -20,7 +21,11 @@ class Bootstrap_Form extends Bootstrap_Element_Element {
     public function add(Bootstrap_Element_Element $child){
         $child->prefix($this->prefix());
 
-        $this->_children[] = $child;
+        if($child instanceof Bootstrap_Element_Button){
+            $this->_buttons[] = $child;
+        }else{
+            $this->_children[] = $child;
+        }
 
         return $this;
     }
@@ -29,6 +34,12 @@ class Bootstrap_Form extends Bootstrap_Element_Element {
         return is_null($child_id)
             ? $this->_children
             : Arr::get($this->_children, $child_id);
+    }
+
+    public function buttons($button_id = NULL){
+        return is_null($button_id)
+            ? $this->_buttons
+            : Arr::get($this->_buttons, $button_id);
     }
 
     public function caption($text = NULL){

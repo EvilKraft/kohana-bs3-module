@@ -6,5 +6,8 @@
                 echo $child;
             }
         ?>
+        <?php
+            echo implode(' ', $element->buttons());
+        ?>
     </fieldset>
 <?php echo Form::close(); ?>

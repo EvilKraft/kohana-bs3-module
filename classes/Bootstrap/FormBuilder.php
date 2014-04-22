@@ -24,6 +24,16 @@ class Bootstrap_FormBuilder  {
         $this->_form  = $form;
 
         $this->fillForm();
+
+        $this->_form
+            ->add(
+                Bootstrap_Element_Button::factory(array('type' => 'submit'))
+                    ->text('Submit')
+                    ->setOption('success')
+            )->add(
+                Bootstrap_Element_Button::factory()
+                    ->text('Cancel')
+            );
     }
 
     protected function fillForm(){
