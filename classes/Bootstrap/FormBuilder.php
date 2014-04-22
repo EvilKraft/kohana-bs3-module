@@ -53,6 +53,7 @@ class Bootstrap_FormBuilder  {
                     case 'tinyint'   :
                         $this->_form->add(
                             Bootstrap_Element_Input::factory($attributes)
+                                ->label($attributes['name'])
                         );
                         break;
                     case 'char'      :
@@ -60,12 +61,14 @@ class Bootstrap_FormBuilder  {
                         $attributes['maxlength'] = $field['character_maximum_length'];
                         $this->_form->add(
                             Bootstrap_Element_Input::factory($attributes)
+                                ->label($attributes['name'])
                         );
                         break;
                     case 'text'      :
                     case 'tinytext'  :
                         $this->_form->add(
                             Bootstrap_Element_Textarea::factory($attributes)
+                                ->label($attributes['name'])
                         );
                         break;
                     case 'date'      :
@@ -73,6 +76,7 @@ class Bootstrap_FormBuilder  {
 
                         $this->_form->add(
                             Bootstrap_Element_Datepicker::factory($attributes)
+                                ->label($attributes['name'])
                         );
                         break;
 
