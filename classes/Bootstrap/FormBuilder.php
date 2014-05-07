@@ -72,7 +72,7 @@ class Bootstrap_FormBuilder  {
                         );
                         break;
                     case 'date'      :
-                        $attributes['value'] = implode('-', array_reverse(explode('-', $attributes['value'])));
+                        $attributes['value'] = implode('.', array_reverse(explode('-', $attributes['value'])));
 
                         $this->_form->add(
                             Bootstrap_Element_Datepicker::factory($attributes)
@@ -82,12 +82,45 @@ class Bootstrap_FormBuilder  {
 
                     case 'datetime'  :
                     case 'timestamp' :
+                        list($date, $time) = explode(' ', $attributes['value']);
+
+                        $date = implode('.', array_reverse(explode('-', $date)));
+
+                        $attributes['value'] = $date . ' ' . $time;
+
+                        $this->_form->add(
+                            Bootstrap_Element_Datetimepicker::factory($attributes)
+                                ->label($attributes['name'])
+                        );
+                        break;
                     case 'time'      :
-                    case 'year'      :
+                        $this->_form->add(
+                            Bootstrap_Element_Timepicker::factory($attributes)
+                                ->label($attributes['name'])
+                        );
+                        break;
                     case 'enum'      :
+                        unset($attributes['value']);
+
+                        $this->_form->add(
+                            Bootstrap_Element_Select::factory($attributes)
+                                ->options($field['options'], true)
+                                ->selected($this->_model->$field['column_name'])
+                                ->label($attributes['name'])
+                        );
+                        break;
+                    case 'year'      :
+                        unset($attributes['value']);
+
+                        $this->_form->add(
+                            Bootstrap_Element_Select::factory($attributes)
+                                ->options(Bootstrap_Helper::years_array(), true)
+                                ->selected($this->_model->$field['column_name'])
+                                ->label($attributes['name'])
+                        );
                         break;
                     default :
-                        echo 'Unknown field:<br /><pre>'.print_r($field, true).'</pre>';
+                        echo '<pre>Unknown field<br>value => '.$this->_model->$field['column_name'].'<br>'.print_r($field, true).'</pre>';
                 }
             }
         }
