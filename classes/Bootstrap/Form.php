@@ -1,6 +1,6 @@
 <?php defined('SYSPATH') OR die('No direct script access.');
 
-class Bootstrap_Form extends Bootstrap_Element_Element {
+class Bootstrap_Form extends Bootstrap_Abstract {
 
     protected $_children = array();
     protected $_buttons  = array();
@@ -18,7 +18,7 @@ class Bootstrap_Form extends Bootstrap_Element_Element {
         $this->_prefix = $prefix;
     }
 
-    public function add(Bootstrap_Element_Element $child){
+    public function add(Bootstrap_Element $child){
         $child->prefix($this->prefix());
 
         if($child instanceof Bootstrap_Element_Button){

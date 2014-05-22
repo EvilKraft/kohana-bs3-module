@@ -11,13 +11,15 @@ class Bootstrap_Helper {
      * @return string
      * @throws Kohana_Exception
      */
-    public static function select(array $attributes, array $options=array(), $selected=array(), $empty_option=NULL, $combine=FALSE){
+    public static function select(array $attributes, array $options=array(), $selected=NULL, $empty_option=NULL, $combine=FALSE){
         if(!array_key_exists('name', $attributes)){
             throw new Kohana_Exception('"name" attribute is required');
         }
 
         if (is_array($selected)){
             $attributes[] = 'multiple';
+        }elseif(is_null($selected)){
+            $selected = array();
         }else{
             $selected = array((string) $selected);
         }
@@ -62,7 +64,7 @@ class Bootstrap_Helper {
         }
 
         $selected_wrong = array_diff($selected, $selected_valid);
-        if(count($selected_wrong) > 0){
+        if(count($selected) > 0 && count($selected_wrong) > 0){
             throw new Kohana_Exception('Wrong selected options: "'.implode('", "', $selected_wrong).'"!');
         }
 

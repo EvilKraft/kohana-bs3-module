@@ -19,7 +19,7 @@ class Bootstrap_Element_Datepicker extends Bootstrap_Element_Input{
         }else{
             $attributes['for'] = $this->attributes('id');
 
-            $this->_label = Bootstrap_Element_Label::factory($attributes)
+            $this->_label = Bootstrap_Element::factory('Label', $attributes)
                 ->title($title);
 
             return $this;

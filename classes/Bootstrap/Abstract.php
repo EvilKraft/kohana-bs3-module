@@ -1,6 +1,6 @@
 <?php defined('SYSPATH') OR die('No direct script access.');
 
-abstract class Bootstrap_Element_Element {
+abstract class Bootstrap_Abstract {
 
     protected $_attributes = array();
 
@@ -10,12 +10,17 @@ abstract class Bootstrap_Element_Element {
 
     protected $_real_id = '';
 
-    protected $_help_block = '';
-
     protected $_required_attributes = array('name');
 
-    public static function factory(array $attributes = array(), $template = NULL){
-        $class = get_called_class();
+    final public static function factory($class_name, array $attributes = array(), $template = NULL){
+
+        $called_class = get_called_class();
+
+        if(get_parent_class($called_class) != 'Bootstrap_Abstract'){
+            throw new Kohana_Exception('Method "factory" not allowed in class "'.$called_class.'"!');
+        }
+
+        $class = $called_class.'_'.ucfirst(strtolower($class_name));
 
         return new $class($attributes, $template);
     }
@@ -72,8 +77,14 @@ abstract class Bootstrap_Element_Element {
         return $content;
     }
 
-    public function __toString(){
-        return $this->render();
+    public function render_to_file($filename){
+        $dir = dirname($filename);
+
+        if(!is_writable($dir)){
+            throw new Kohana_Exception('Directory "'.$dir.'" is not writable.');
+        }
+
+        file_put_contents($filename, $this->render(), LOCK_EX);
     }
 
     public function addClass($class){
@@ -85,6 +96,8 @@ abstract class Bootstrap_Element_Element {
         $class_a = array_diff($class_a, array(''));
 
         $this->_attributes['class'] = implode(' ', $class_a);
+
+        return $this;
     }
 
     public function delClass($classes){
@@ -100,6 +113,8 @@ abstract class Bootstrap_Element_Element {
         $class_a = array_keys($class_a);
 
         $this->_attributes['class'] = implode(' ', $class_a);
+
+        return $this;
     }
 
     public function hasClass($class){
@@ -118,27 +133,8 @@ abstract class Bootstrap_Element_Element {
         $styles = array_diff($styles, array(''));
 
         $this->_attributes['style'] = implode(';', $styles).';';
-    }
 
-    public function help_block($text = NULL, array $attributes = array()){
-        if(is_null($text)){
-            return (string) $this->_help_block;
-        }else{
-            $this->_help_block = Bootstrap_Element_HelpBlock::factory($attributes)
-                ->text($text);
-
-            return $this;
-        }
-    }
-
-    public function render_to_file($filename){
-        $dir = dirname($filename);
-
-        if(!is_writable($dir)){
-            throw new Kohana_Exception('Directory "'.$dir.'" is not writable.');
-        }
-
-        file_put_contents($filename, $this->render(), LOCK_EX);
+        return $this;
     }
 
     protected function checkAttributes(Array $attributes){
@@ -150,6 +146,10 @@ abstract class Bootstrap_Element_Element {
         }
 
         return true;
+    }
+
+    public function __toString(){
+        return $this->render();
     }
 
     public function __isset($attribute){

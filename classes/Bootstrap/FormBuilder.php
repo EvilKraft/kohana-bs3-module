@@ -6,12 +6,13 @@ class Bootstrap_FormBuilder  {
 
     protected $_form;
 
-    public static function factory($model, $form = 'Bootstrap_Form')
+    public static function factory($model, $form = 'basic')
     {
         if (is_string($model)) {
             $model = ORM::factory($model);
         }
 
+        $form = 'Bootstrap_Form_'.ucfirst(strtolower($form));
         $form = new $form(array(
             'name' => 'frm_'.$model->object_name()
         ));
@@ -27,11 +28,11 @@ class Bootstrap_FormBuilder  {
 
         $this->_form
             ->add(
-                Bootstrap_Element_Button::factory(array('type' => 'submit'))
+                Bootstrap_Element::factory('Button', array('type' => 'submit'))
                     ->text('Submit')
                     ->setOption('success')
             )->add(
-                Bootstrap_Element_Button::factory()
+                Bootstrap_Element::factory('Button')
                     ->text('Cancel')
             );
     }
@@ -44,84 +45,114 @@ class Bootstrap_FormBuilder  {
             );
 
             if($field['key'] == 'PRI'){
-                $this->_form->add(
-                    Bootstrap_Element_Hidden::factory($attributes)
-                );
+                $element = Bootstrap_Element::factory('Hidden', $attributes);
+            }elseif(in_array($field['type'], array('int', 'float'))){
+                //data_type: tinyint, smallint, int, bigint [unsigned [zerofill]]
+                //data_type: decimal, float, double [unsigned [zerofill]]
+                //
+                // bool, boolean is just tinyint(1) :(
+
+                $element = Bootstrap_Element::factory('Input', $attributes)
+                    ->label($attributes['name']);
             }else{
                 switch($field['data_type']){
-                    case 'int'       :
-                    case 'tinyint'   :
-                        $this->_form->add(
-                            Bootstrap_Element_Input::factory($attributes)
-                                ->label($attributes['name'])
-                        );
-                        break;
                     case 'char'      :
                     case 'varchar'   :
                         $attributes['maxlength'] = $field['character_maximum_length'];
-                        $this->_form->add(
-                            Bootstrap_Element_Input::factory($attributes)
-                                ->label($attributes['name'])
-                        );
+                        $element = Bootstrap_Element::factory('Input', $attributes)
+                            ->label($attributes['name']);
                         break;
-                    case 'text'      :
                     case 'tinytext'  :
-                        $this->_form->add(
-                            Bootstrap_Element_Textarea::factory($attributes)
-                                ->label($attributes['name'])
-                        );
+                    case 'text'      :
+                    case 'mediumtext':
+                    case 'longtext'  :
+                        unset($attributes['value']);
+
+                        $attributes['maxlength'] = $field['character_maximum_length'];
+
+                        $element = Bootstrap_Element::factory('Textarea', $attributes)
+                            ->label($attributes['name'])
+                            ->text($this->_model->$field['column_name']);
                         break;
                     case 'date'      :
-                        $attributes['value'] = implode('.', array_reverse(explode('-', $attributes['value'])));
+                        if(!is_null($attributes['value'])){
+                            $date = new DateTime($attributes['value']);
+                            $attributes['value'] = $date->format('d.m.Y');
+                        }
 
-                        $this->_form->add(
-                            Bootstrap_Element_Datepicker::factory($attributes)
-                                ->label($attributes['name'])
-                        );
+                        $element = Bootstrap_Element::factory('Datepicker', $attributes)
+                            ->label($attributes['name']);
                         break;
-
                     case 'datetime'  :
                     case 'timestamp' :
-                        list($date, $time) = explode(' ', $attributes['value']);
+                        if(!is_null($attributes['value'])){
+                            $date = new DateTime($attributes['value']);
+                            $attributes['value'] = $date->format('d.m.Y H:i:s');
+                        }
 
-                        $date = implode('.', array_reverse(explode('-', $date)));
-
-                        $attributes['value'] = $date . ' ' . $time;
-
-                        $this->_form->add(
-                            Bootstrap_Element_Datetimepicker::factory($attributes)
-                                ->label($attributes['name'])
-                        );
+                        $element = Bootstrap_Element::factory('Datetimepicker', $attributes)
+                            ->label($attributes['name']);
                         break;
                     case 'time'      :
-                        $this->_form->add(
-                            Bootstrap_Element_Timepicker::factory($attributes)
-                                ->label($attributes['name'])
-                        );
+                        $element = Bootstrap_Element::factory('Timepicker', $attributes)
+                            ->label($attributes['name']);
                         break;
                     case 'enum'      :
                         unset($attributes['value']);
 
-                        $this->_form->add(
-                            Bootstrap_Element_Select::factory($attributes)
-                                ->options($field['options'], true)
-                                ->selected($this->_model->$field['column_name'])
-                                ->label($attributes['name'])
-                        );
+                        $element = Bootstrap_Element::factory('Select', $attributes)
+                            ->label($attributes['name'])
+                            ->options($field['options'], true);
+
+
+                        $selected = (string) $this->_model->$field['column_name'];
+                        if($selected != ''){
+                            $element->selected($selected);
+                        }
+                        break;
+                    case 'set'      :
+                        unset($attributes['value']);
+
+                        $element = Bootstrap_Element::factory('Select', $attributes)
+                            ->label($attributes['name'])
+                            ->options($field['options'], true);
+
+                        $selected = (string) $this->_model->$field['column_name'];
+                        if($selected != ''){
+                            $element->selected(explode(',', $selected));
+                        }
                         break;
                     case 'year'      :
                         unset($attributes['value']);
 
-                        $this->_form->add(
-                            Bootstrap_Element_Select::factory($attributes)
-                                ->options(Bootstrap_Helper::years_array(), true)
-                                ->selected($this->_model->$field['column_name'])
-                                ->label($attributes['name'])
-                        );
+                        $element = Bootstrap_Element::factory('Select', $attributes)
+                            ->label($attributes['name'])
+                            ->options(Bootstrap_Helper::years_array(), true);
+
+                        if($this->_model->$field['column_name'] != '0000'){
+                            $element->selected($this->_model->$field['column_name']);
+                        }
+                        break;
+                    case 'binary'    :
+                    case 'varbinary' :
+                    case 'tinyblob'  :
+                    case 'blob'      :
+                    case 'mediumblob':
+                    case 'longblob'  :
+                        // TODO: Binary fields
+
+                        $element = Bootstrap_Element::factory('HelpBlock')
+                            ->addStyle('color: red;')
+                            ->text('Can\'t show field "'.$field['column_name'].'".<br>Module not work with binary fields.');
                         break;
                     default :
+                        //echo 'zz'.Debug::vars($this->_model->$field['column_name'], $field).'dd';
                         echo '<pre>Unknown field<br>value => '.$this->_model->$field['column_name'].'<br>'.print_r($field, true).'</pre>';
                 }
+            }
+
+            if($element instanceof Bootstrap_Element){
+                $this->_form->add($element);
             }
         }
 

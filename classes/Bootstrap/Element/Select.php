@@ -1,9 +1,9 @@
 <?php defined('SYSPATH') OR die('No direct script access.');
 
-class Bootstrap_Element_Select extends Bootstrap_Element_Element{
+class Bootstrap_Element_Select extends Bootstrap_Element{
 
     protected $_options      = array();
-    protected $_selected     = '';
+    protected $_selected     = NULL;
     protected $_empty_option = NULL;
 
 
@@ -23,7 +23,7 @@ class Bootstrap_Element_Select extends Bootstrap_Element_Element{
         }else{
             $attributes['for'] = $this->attributes('id');
 
-            $this->_label = Bootstrap_Element_Label::factory($attributes)
+            $this->_label = Bootstrap_Element::factory('Label', $attributes)
                 ->title($title);
 
             return $this;
@@ -45,7 +45,7 @@ class Bootstrap_Element_Select extends Bootstrap_Element_Element{
     }
 
     public function selected($selected = NULL){
-        if(is_null($selected)){
+        if(func_num_args() == 0){
             return $this->_selected;
         }
 
@@ -65,11 +65,20 @@ class Bootstrap_Element_Select extends Bootstrap_Element_Element{
     }
 
     public function select(){
-        return Bootstrap_Helper::select(
-            $this->attributes(),
-            $this->options(),
-            $this->selected(),
-            $this->empty_option()
-        );
+        $select = '';
+
+        try {
+            $select = Bootstrap_Helper::select(
+                $this->attributes(),
+                $this->options(),
+                $this->selected(),
+                $this->empty_option()
+            );
+        } catch (Kohana_Exception $e) {
+            $select = $e->getMessage();
+        }
+
+        return $select;
+
     }
 }

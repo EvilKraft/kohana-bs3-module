@@ -1,6 +1,6 @@
 <?php defined('SYSPATH') OR die('No direct script access.');
 
-class Bootstrap_Element_Button extends Bootstrap_Element_Element{
+class Bootstrap_Element_Button extends Bootstrap_Element{
 
     protected $_text = NULL;
 

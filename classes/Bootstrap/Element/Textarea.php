@@ -1,6 +1,6 @@
 <?php defined('SYSPATH') OR die('No direct script access.');
 
-class Bootstrap_Element_Textarea extends Bootstrap_Element_Element{
+class Bootstrap_Element_Textarea extends Bootstrap_Element{
 
     protected $_text  = NULL;
     protected $_label = NULL;
@@ -14,7 +14,7 @@ class Bootstrap_Element_Textarea extends Bootstrap_Element_Element{
     }
 
     public function text($text = NULL){
-        if(is_null($text)){
+        if(func_num_args() == 0){
             return $this->_text;
         }else{
             $this->_text = (string) $text;
@@ -23,12 +23,12 @@ class Bootstrap_Element_Textarea extends Bootstrap_Element_Element{
     }
 
     public function label($title = NULL, array $attributes = array()){
-        if(is_null($title)){
+        if(func_num_args() == 0){
             return (string) $this->_label;
         }else{
             $attributes['for'] = $this->attributes('id');
 
-            $this->_label = Bootstrap_Element_Label::factory($attributes)
+            $this->_label = Bootstrap_Element::factory('Label', $attributes)
                 ->title($title);
 
             return $this;
